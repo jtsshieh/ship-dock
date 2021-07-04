@@ -1,0 +1,8 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "dist/apps/backend/out-tsc",
+		"types": ["node", "express", "multer"]
+	},
+	"include": ["**/*.ts", "./types/**.d.ts"]
+}

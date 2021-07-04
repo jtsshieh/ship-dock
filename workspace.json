@@ -1,10 +1,149 @@
 {
-  
-  
-  "version": 2,
-  
-  "projects": {},
-  "cli": {
-    "defaultCollection": "@nrwl/workspace"
-  }
+	"version": 2,
+	"cli": {
+		"defaultCollection": "@nrwl/react"
+	},
+	"defaultProject": "frontend",
+	"generators": {
+		"@nrwl/react": {
+			"application": {
+				"babel": true
+			}
+		}
+	},
+	"projects": {
+		"api-interface": {
+			"root": "libs/api-interface",
+			"sourceRoot": "libs/api-interface/src",
+			"projectType": "library",
+			"targets": {
+				"lint": {
+					"executor": "@nrwl/linter:eslint",
+					"options": {
+						"lintFilePatterns": ["libs/api-interface/src/**/*.ts"]
+					}
+				}
+			}
+		},
+		"backend": {
+			"root": "apps/backend",
+			"sourceRoot": "apps/backend/src",
+			"projectType": "application",
+			"targets": {
+				"build": {
+					"executor": "@nrwl/node:build",
+					"outputs": ["{options.outputPath}"],
+					"options": {
+						"outputPath": "dist/apps/backend",
+						"main": "apps/backend/src/main.ts",
+						"tsConfig": "apps/backend/tsconfig.app.json",
+						"generatePackageJson": true,
+						"progress": true,
+						"webpackConfig": "apps/backend/webpack.config.js"
+					},
+					"configurations": {
+						"production": {
+							"optimization": true,
+							"extractLicenses": true,
+							"inspect": false
+						}
+					}
+				},
+				"build-prisma": {
+					"executor": "@nrwl/workspace:run-commands",
+					"options": {
+						"command": "npx prisma migrate deploy",
+						"cwd": "."
+					}
+				},
+				"serve": {
+					"executor": "@nrwl/node:execute",
+					"options": {
+						"buildTarget": "backend:build"
+					}
+				},
+				"lint": {
+					"executor": "@nrwl/linter:eslint",
+					"options": {
+						"lintFilePatterns": ["apps/backend/src/**/*.ts"]
+					}
+				}
+			}
+		},
+		"frontend": {
+			"root": "apps/frontend",
+			"sourceRoot": "apps/frontend",
+			"projectType": "application",
+			"targets": {
+				"build": {
+					"executor": "@nrwl/next:build",
+					"outputs": ["{options.outputPath}"],
+					"options": {
+						"root": "apps/frontend",
+						"outputPath": "dist/apps/frontend"
+					},
+					"configurations": {
+						"production": {}
+					}
+				},
+				"serve": {
+					"executor": "@nrwl/next:server",
+					"options": {
+						"buildTarget": "frontend:build",
+						"dev": true,
+						"proxyConfig": "apps/frontend/proxy.conf.json"
+					},
+					"configurations": {
+						"production": {
+							"buildTarget": "frontend:build:production",
+							"dev": false
+						}
+					}
+				},
+				"lint": {
+					"executor": "@nrwl/linter:eslint",
+					"options": {
+						"lintFilePatterns": ["apps/frontend/src/**/*.{ts,tsx,js,jsx}"]
+					}
+				}
+			}
+		},
+		"rhf-material-ui": {
+			"root": "libs/rhf-material-ui",
+			"sourceRoot": "libs/rhf-material-ui/src",
+			"projectType": "library",
+			"targets": {
+				"build": {
+					"executor": "@nrwl/web:package",
+					"outputs": ["{options.outputPath}"],
+					"options": {
+						"outputPath": "dist/libs/rhf-material-ui",
+						"tsConfig": "libs/rhf-material-ui/tsconfig.lib.json",
+						"project": "libs/rhf-material-ui/package.json",
+						"entryFile": "libs/rhf-material-ui/src/index.ts",
+						"external": [
+							"react",
+							"react-dom",
+							"react-hook-form",
+							"@material-ui/core/TextField"
+						],
+						"rollupConfig": "@nrwl/react/plugins/bundle-rollup",
+						"assets": [
+							{
+								"glob": "libs/rhf-material-ui/README.md",
+								"input": ".",
+								"output": "."
+							}
+						]
+					}
+				},
+				"lint": {
+					"executor": "@nrwl/linter:eslint",
+					"options": {
+						"lintFilePatterns": ["libs/rhf-material-ui/**/*.{ts,tsx,js,jsx}"]
+					}
+				}
+			}
+		}
+	}
 }
